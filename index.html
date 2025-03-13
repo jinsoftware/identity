@@ -7,24 +7,24 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f3f3f3;
             text-align: center;
             padding: 20px;
         }
         .container {
             background: white;
             padding: 20px;
-            max-width: 400px;
-            margin: auto;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            margin: auto;
         }
         .logo {
-            width: 100px;
-            margin-bottom: 20px;
+            width: 120px;
+            margin-bottom: 15px;
         }
         h2 {
-            color: #004b8d;
+            color: #003366;
         }
         input {
             width: 90%;
@@ -33,110 +33,121 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
+            text-align: center;
         }
         button {
             width: 100%;
             padding: 12px;
-            background: #004b8d;
+            background: #003366;
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 5px;
             margin-top: 10px;
         }
         button:hover {
-            background: #003366;
+            background: #002244;
         }
-        .result-container {
+        .loading-container {
             display: none;
             margin-top: 20px;
-            text-align: left;
-            padding: 15px;
-            background: #fff;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
             border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
         }
-        .security-item {
-            font-size: 16px;
-            margin: 10px 0;
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: #0078d4;
+            transition: width 1s ease-in-out;
         }
-        .loading-text {
-            color: #666;
-            font-style: italic;
+        .results {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: white;
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: left;
         }
         .highlight {
+            color: #003366;
             font-weight: bold;
-            color: #d9534f;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Seal_of_the_United_States_Federal_Trade_Commission.svg/200px-Seal_of_the_United_States_Federal_Trade_Commission.svg.png" alt="FTC Logo" class="logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/US-FederalTradeCommission-Seal.svg" class="logo" alt="FTC Logo">
         <h2>Federal Trade Commission</h2>
-        <h3>Identity Security Check</h3>
+        <p>Check your identity security level</p>
 
-        <input type="text" id="fullName" placeholder="Enter Your Full Name">
-        <input type="text" id="ssn" placeholder="Last 4 Digits of SSN" maxlength="4">
-        <button onclick="startSecurityCheck()">Check Your Security Level</button>
+        <input type="text" id="name" placeholder="Enter Your Full Name" required>
+        <input type="text" id="ssn" placeholder="Last 4 Digits of SSN" maxlength="4" required>
+        <button onclick="startAnalysis()">Check Security</button>
 
-        <div class="result-container" id="result">
-            <h3>Security Analysis for <span id="userName"></span></h3>
-            <p class="loading-text" id="loadingText">Analyzing security data...</p>
+        <div class="loading-container" id="loadingContainer">
+            <p>Analyzing your identity security...</p>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+        </div>
 
-            <div class="security-item">Passport Security: <span id="passport" class="highlight"></span></div>
-            <div class="security-item">Driver License Security: <span id="license" class="highlight"></span></div>
-            <div class="security-item">IP Address Security: <span id="ip" class="highlight"></span></div>
-            <div class="security-item">Banking Security: <span id="banking" class="highlight"></span></div>
-
-            <h3>Overall Security Score: <span id="averageSecurity" class="highlight"></span>%</h3>
+        <div class="results" id="resultsContainer">
+            <p><strong>Name:</strong> <span id="userName"></span></p>
+            <p>📜 Passport Security: <span class="highlight">3%</span></p>
+            <p>🚗 Driver's License Security: <span class="highlight">6%</span></p>
+            <p>🌍 IP Address Security: <span class="highlight">21%</span></p>
+            <p>🏦 Banking Security: <span class="highlight">4%</span></p>
+            <p>📊 <strong>Overall Security Score:</strong> <span class="highlight" id="averageScore"></span>%</p>
         </div>
     </div>
 
     <script>
-        function startSecurityCheck() {
-            let fullName = document.getElementById("fullName").value;
+        function startAnalysis() {
+            let name = document.getElementById("name").value;
             let ssn = document.getElementById("ssn").value;
+            let loadingContainer = document.getElementById("loadingContainer");
+            let progressBar = document.getElementById("progressBar");
+            let resultsContainer = document.getElementById("resultsContainer");
+            let userNameDisplay = document.getElementById("userName");
+            let averageScoreDisplay = document.getElementById("averageScore");
 
-            if (fullName.trim() === "" || ssn.trim() === "" || ssn.length !== 4) {
-                alert("Please enter a valid name and last 4 digits of your SSN.");
+            if (name.trim() === "" || ssn.trim() === "" || ssn.length !== 4) {
+                alert("Please enter your name and the last 4 digits of your SSN.");
                 return;
             }
 
-            document.getElementById("result").style.display = "block";
-            document.getElementById("userName").textContent = fullName;
-            document.getElementById("loadingText").style.display = "block";
+            // Hide previous results and show loading bar
+            resultsContainer.style.display = "none";
+            loadingContainer.style.display = "block";
+            progressBar.style.width = "0%";
 
-            let securityLevels = {
-                passport: 3,
-                license: 6,
-                ip: 21,
-                banking: 4
-            };
+            let progress = 0;
+            let interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + "%";
 
-            let totalSecurity = 0;
-            let count = 0;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    loadingContainer.style.display = "none";
 
-            function updateSecurity(key, value, delay) {
-                setTimeout(() => {
-                    document.getElementById(key).textContent = value + "%";
-                    totalSecurity += value;
-                    count++;
-                    if (count === 4) {
-                        let avgSecurity = (totalSecurity / 4).toFixed(1);
-                        document.getElementById("averageSecurity").textContent = avgSecurity;
-                        document.getElementById("loadingText").style.display = "none";
-                    }
-                }, delay);
-            }
-
-            updateSecurity("passport", securityLevels.passport, 2000);
-            updateSecurity("license", securityLevels.license, 5000);
-            updateSecurity("ip", securityLevels.ip, 8000);
-            updateSecurity("banking", securityLevels.banking, 11000);
+                    // Show Results
+                    resultsContainer.style.display = "block";
+                    userNameDisplay.innerText = name;
+                    let averageScore = ((3 + 6 + 21 + 4) / 4).toFixed(2);
+                    averageScoreDisplay.innerText = averageScore;
+                }
+            }, 1000); // Increases progress every second
         }
     </script>
 
