@@ -7,26 +7,24 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: white;
-            color: black;
+            background-color: #f4f4f4;
             text-align: center;
             padding: 20px;
         }
         .container {
+            background: white;
+            padding: 20px;
             max-width: 400px;
             margin: auto;
-            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            background: #f3f3f3;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
         }
-        img {
-            width: 120px;
+        .logo {
+            width: 100px;
             margin-bottom: 20px;
         }
         h2 {
-            font-size: 22px;
-            margin-bottom: 20px;
+            color: #004b8d;
         }
         input {
             width: 90%;
@@ -39,7 +37,7 @@
         button {
             width: 100%;
             padding: 12px;
-            background: #0047ab;
+            background: #004b8d;
             color: white;
             border: none;
             cursor: pointer;
@@ -49,92 +47,96 @@
             margin-top: 10px;
         }
         button:hover {
-            background: #003580;
+            background: #003366;
         }
-        .loading-section {
+        .result-container {
             display: none;
             margin-top: 20px;
             text-align: left;
+            padding: 15px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        .security-item {
             font-size: 16px;
+            margin: 10px 0;
+        }
+        .loading-text {
+            color: #666;
+            font-style: italic;
+        }
+        .highlight {
             font-weight: bold;
-        }
-        .progress-bar {
-            width: 100%;
-            background-color: #ddd;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-        .progress-fill {
-            height: 15px;
-            width: 0;
-            background: #0047ab;
-            border-radius: 5px;
+            color: #d9534f;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Seal_of_the_United_States_Federal_Trade_Commission.svg/1200px-Seal_of_the_United_States_Federal_Trade_Commission.svg.png">
-        <h2>Federal Trade Commission - Identity Security Check</h2>
-        <input type="text" id="fullName" placeholder="Enter Your Full Name" required>
-        <input type="text" id="ssn" placeholder="Enter Last 4 Digits of SSN" maxlength="4" required>
-        <button onclick="startSecurityCheck()">Check Security Level</button>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Seal_of_the_United_States_Federal_Trade_Commission.svg/200px-Seal_of_the_United_States_Federal_Trade_Commission.svg.png" alt="FTC Logo" class="logo">
+        <h2>Federal Trade Commission</h2>
+        <h3>Identity Security Check</h3>
 
-        <!-- Security Analysis Section -->
-        <div class="loading-section" id="securityResults">
-            <p>Analyzing your identity security...</p>
-            <div id="status"></div>
+        <input type="text" id="fullName" placeholder="Enter Your Full Name">
+        <input type="text" id="ssn" placeholder="Last 4 Digits of SSN" maxlength="4">
+        <button onclick="startSecurityCheck()">Check Your Security Level</button>
+
+        <div class="result-container" id="result">
+            <h3>Security Analysis for <span id="userName"></span></h3>
+            <p class="loading-text" id="loadingText">Analyzing security data...</p>
+
+            <div class="security-item">Passport Security: <span id="passport" class="highlight"></span></div>
+            <div class="security-item">Driver License Security: <span id="license" class="highlight"></span></div>
+            <div class="security-item">IP Address Security: <span id="ip" class="highlight"></span></div>
+            <div class="security-item">Banking Security: <span id="banking" class="highlight"></span></div>
+
+            <h3>Overall Security Score: <span id="averageSecurity" class="highlight"></span>%</h3>
         </div>
     </div>
 
     <script>
         function startSecurityCheck() {
-            let name = document.getElementById("fullName").value;
+            let fullName = document.getElementById("fullName").value;
             let ssn = document.getElementById("ssn").value;
-            let results = document.getElementById("securityResults");
-            let status = document.getElementById("status");
 
-            if (!name || ssn.length !== 4) {
-                alert("Please enter a valid name and last 4 digits of SSN.");
+            if (fullName.trim() === "" || ssn.trim() === "" || ssn.length !== 4) {
+                alert("Please enter a valid name and last 4 digits of your SSN.");
                 return;
             }
 
-            results.style.display = "block";
-            status.innerHTML = ""; // Clear previous results
+            document.getElementById("result").style.display = "block";
+            document.getElementById("userName").textContent = fullName;
+            document.getElementById("loadingText").style.display = "block";
 
-            let securityChecks = [
-                { label: "Passport Security", value: 3 },
-                { label: "Driver License Security", value: 6 },
-                { label: "IP Address Security", value: 21 },
-                { label: "Banking Security", value: 4 }
-            ];
+            let securityLevels = {
+                passport: 3,
+                license: 6,
+                ip: 21,
+                banking: 4
+            };
 
-            let i = 0;
-            function showNextCheck() {
-                if (i < securityChecks.length) {
-                    let check = securityChecks[i];
-                    let resultDiv = document.createElement("div");
-                    resultDiv.innerHTML = `<p>${check.label}: <span id="progress${i}">0%</span></p>
-                                           <div class="progress-bar"><div class="progress-fill" id="bar${i}"></div></div>`;
-                    status.appendChild(resultDiv);
+            let totalSecurity = 0;
+            let count = 0;
 
-                    let percent = 0;
-                    let interval = setInterval(() => {
-                        if (percent < check.value) {
-                            percent++;
-                            document.getElementById(`progress${i}`).textContent = percent + "%";
-                            document.getElementById(`bar${i}`).style.width = percent + "%";
-                        } else {
-                            clearInterval(interval);
-                            i++;
-                            showNextCheck();
-                        }
-                    }, 50);
-                }
+            function updateSecurity(key, value, delay) {
+                setTimeout(() => {
+                    document.getElementById(key).textContent = value + "%";
+                    totalSecurity += value;
+                    count++;
+                    if (count === 4) {
+                        let avgSecurity = (totalSecurity / 4).toFixed(1);
+                        document.getElementById("averageSecurity").textContent = avgSecurity;
+                        document.getElementById("loadingText").style.display = "none";
+                    }
+                }, delay);
             }
 
-            showNextCheck();
+            updateSecurity("passport", securityLevels.passport, 2000);
+            updateSecurity("license", securityLevels.license, 5000);
+            updateSecurity("ip", securityLevels.ip, 8000);
+            updateSecurity("banking", securityLevels.banking, 11000);
         }
     </script>
 
