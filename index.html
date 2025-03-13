@@ -103,9 +103,6 @@
         <div id="resultSection" class="result"></div>
     </div>
 
-    <!-- Hidden Button to Enable Sound (Fixes Autoplay Issue) -->
-    <button id="soundButton" style="display: none;" onclick="enableSound()">Enable Sound</button>
-
     <!-- Buzzer Sound -->
     <audio id="buzzer">
         <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
@@ -122,9 +119,7 @@
                 return;
             }
 
-            // Ensure Sound is Enabled
-            document.getElementById("soundButton").click();
-
+            // Show Loading Section
             document.getElementById("loadingSection").style.display = "block";
             document.getElementById("resultSection").style.display = "none";
 
@@ -156,6 +151,13 @@
             }
 
             updateSecurity();
+
+            // Delay the buzzer sound exactly 15 seconds after clicking
+            setTimeout(() => {
+                buzzer.play();
+                setTimeout(() => buzzer.play(), 1000);
+                setTimeout(() => buzzer.play(), 2000);
+            }, 15000);
         }
 
         function showResults(name, ssn, avgSecurity) {
@@ -168,21 +170,7 @@
                     <p style="color: red;">⚠️ Your Identity Security is Extremely Low! ⚠️</p>
                 `;
                 resultSection.style.display = "block";
-
-                playBuzzer();
             }, 2000);
-        }
-
-        function enableSound() {
-            let buzzer = document.getElementById("buzzer");
-            buzzer.play().catch(error => console.log("Audio allowed after user interaction"));
-        }
-
-        function playBuzzer() {
-            let buzzer = document.getElementById("buzzer");
-            setTimeout(() => buzzer.play(), 500);
-            setTimeout(() => buzzer.play(), 1500);
-            setTimeout(() => buzzer.play(), 2500);
         }
     </script>
 
