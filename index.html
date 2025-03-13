@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Federal Trade Commission - Identity Security Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            width: 80px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #003366;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #003366;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #002255;
+        }
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: left;
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- USA Government Logo -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/US-FederalTradeCommission-Seal.svg/1200px-US-FederalTradeCommission-Seal.svg.png" alt="USA Government Logo" class="logo">
+    
+    <div class="container">
+        <h2>Federal Trade Commission</h2>
+        <p>Check Your Identity Security Level</p>
+
+        <input type="text" id="name" placeholder="Enter Your Full Name">
+        <input type="text" id="ssn" placeholder="Enter Last 4 Digits of SSN" maxlength="4">
+        <button onclick="analyzeSecurity()">Check Security Level</button>
+    </div>
+
+    <!-- Security Analysis Results -->
+    <div class="result-container" id="securityResult">
+        <p><strong>Analyzing Security Levels...</strong></p>
+        <p>🔹 Passport Security: <span id="passport">0%</span></p>
+        <p>🔹 Driver License Security: <span id="license">0%</span></p>
+        <p>🔹 IP Address Security: <span id="ip">0%</span></p>
+        <p>🔹 Banking Security: <span id="banking">0%</span></p>
+    </div>
+
+    <script>
+        function analyzeSecurity() {
+            let name = document.getElementById("name").value;
+            let ssn = document.getElementById("ssn").value;
+            let resultBox = document.getElementById("securityResult");
+
+            if (name.trim() === "" || ssn.trim() === "" || ssn.length !== 4) {
+                alert("Please enter a valid Name and Last 4 Digits of SSN.");
+                return;
+            }
+
+            resultBox.style.display = "block";
+
+            // Fake security analysis loading effect
+            let securityLevels = {
+                passport: 3,
+                license: 6,
+                ip: 21,
+                banking: 4
+            };
+
+            let delay = 1000;
+            for (let key in securityLevels) {
+                setTimeout(() => {
+                    document.getElementById(key).textContent = securityLevels[key] + "%";
+                }, delay);
+                delay += 1000;
+            }
+        }
+    </script>
+
+</body>
+</html>
