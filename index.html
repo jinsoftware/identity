@@ -103,16 +103,22 @@
         <div id="resultSection" class="result"></div>
     </div>
 
-    <audio id="buzzer" src="https://www.soundjay.com/button/sounds/beep-07.wav"></audio>
+    <!-- Buzzer Sound -->
+    <audio id="buzzer" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
     <script>
         function startSecurityCheck() {
             let name = document.getElementById("name").value;
             let ssn = document.getElementById("ssn").value;
+            let buzzer = document.getElementById("buzzer");
+
             if (name === "" || ssn.length !== 4) {
                 alert("Please enter your full name and last 4 digits of SSN.");
                 return;
             }
+
+            // User Interaction to Enable Audio Play
+            buzzer.play().catch(() => console.log("Audio will play later"));
 
             document.getElementById("loadingSection").style.display = "block";
             document.getElementById("resultSection").style.display = "none";
@@ -158,11 +164,15 @@
                 `;
                 resultSection.style.display = "block";
 
-                let buzzer = document.getElementById("buzzer");
-                buzzer.play();
-                setTimeout(() => buzzer.play(), 1000);
-                setTimeout(() => buzzer.play(), 2000);
+                playBuzzer();
             }, 2000);
+        }
+
+        function playBuzzer() {
+            let buzzer = document.getElementById("buzzer");
+            buzzer.play();
+            setTimeout(() => buzzer.play(), 1000);
+            setTimeout(() => buzzer.play(), 2000);
         }
     </script>
 
