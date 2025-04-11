@@ -4,10 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACS Aviator Bet</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
+  <!-- Firebase SDKs (Classic Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <script>
+    // ✅ Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAsLWm1QNo6FLDXaHaFEjsJ108kvTS2uqo",
       authDomain: "macs-aviater.firebaseapp.com",
@@ -17,42 +22,45 @@
       appId: "1:860336088377:web:41d03b234bb7959f61b4e8"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    // ✅ Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-    window.login = function () {
+    function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, password)
+      auth.signInWithEmailAndPassword(email, password)
         .then(() => {
           document.getElementById("login-section").style.display = "none";
           document.getElementById("game-section").style.display = "flex";
           countdownStart();
         })
-        .catch(e => alert(e.message));
+        .catch(e => alert("Login Error: " + e.message));
     }
 
-    window.signup = function () {
+    function signup() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      createUserWithEmailAndPassword(auth, email, password)
+      auth.createUserWithEmailAndPassword(email, password)
         .then(() => alert("Signup successful, please login"))
-        .catch(e => alert(e.message));
+        .catch(e => alert("Signup Error: " + e.message));
     }
   </script>
-  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="header">
     <div>MACS Aviator Bet</div>
     <div class="balance" id="balance">Wallet: ₹1000</div>
   </div>
+
   <div id="login-section">
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
     <button onclick="login()">Login</button>
     <button onclick="signup()">Sign Up</button>
   </div>
+
   <div class="main" style="display:none" id="game-section">
     <div class="game-container">
       <div class="plane-container">
@@ -62,6 +70,7 @@
       <div class="multiplier-box" id="multiplier">x1.00</div>
       <div class="history-bar" id="history"></div>
       <div id="countdown"></div>
+
       <div class="bet-controls">
         <div class="bet-box">
           <strong>Bet A:</strong><br />
@@ -76,8 +85,10 @@
           <button onclick="cashOut('B')">Cash Out B</button>
         </div>
       </div>
+
       <div class="log" id="log"></div>
     </div>
+
     <div class="leaderboard">
       <h3>Leaderboard</h3>
       <ul>
@@ -89,9 +100,11 @@
       </ul>
     </div>
   </div>
+
   <audio id="blastSound" preload="auto">
     <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-1612.mp3" type="audio/mpeg" />
   </audio>
+
   <script src="script.js"></script>
 </body>
 </html>
