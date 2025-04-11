@@ -1,22 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MACS Aviator Bet</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1115;
+      color: white;
+      overflow: hidden;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1d1f23;
+      padding: 10px 20px;
+      color: #00ffc3;
+      font-size: 20px;
+    }
+    .balance {
+      background: #00ffc3;
+      color: black;
+      padding: 5px 15px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .main {
+      display: flex;
+      flex-direction: row;
+    }
+    .game-container {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .leaderboard {
+      flex: 1;
+      background: #1d1f23;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+    .leaderboard h3 {
+      margin-top: 0;
+      color: #00ffc3;
+    }
+    .leaderboard ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .leaderboard li {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+    }
+    .plane-container {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      overflow: hidden;
+      background: linear-gradient(to top, #1a1a1a, #2a2a2a);
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .graph-bg {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://svgshare.com/i/12QU.svg') repeat-x bottom;
+      opacity: 0.2;
+    }
+    .plane {
+      position: absolute;
+      left: 0;
+      top: 60px;
+      width: 50px;
+      height: auto;
+      transition: left 0.1s linear;
+    }
+    .multiplier-box {
+      font-size: 50px;
+      font-weight: bold;
+      color: #00ff90;
+      padding: 20px;
+      background: #1c1c1c;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00ff90;
+    }
+    .bet-controls {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .bet-controls input, .bet-controls button {
+      padding: 12px 20px;
+      font-size: 18px;
+      margin: 10px;
+      border: none;
+      border-radius: 6px;
+    }
+    .bet-controls input {
+      width: 150px;
+    }
+    .bet-controls button {
+      background-color: #00ffc3;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .log {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #ccc;
+    }
+  </style>
 </head>
 <body>
-
   <div class="header">
     <div>MACS Aviator Bet</div>
     <div class="balance" id="balance">Wallet: ₹1000</div>
   </div>
-
   <div class="main">
     <div class="game-container">
       <div class="plane-container">
-        <div class="plane" id="plane">✈️</div>
+        <div class="graph-bg"></div>
+        <img src="https://www.svgrepo.com/show/36641/airplane.svg" class="plane" id="plane" alt="Plane" />
       </div>
       <div class="multiplier-box" id="multiplier">x1.00</div>
       <div class="bet-controls">
@@ -26,7 +139,6 @@
       </div>
       <div class="log" id="log"></div>
     </div>
-
     <div class="leaderboard">
       <h3>Leaderboard</h3>
       <ul id="leaderboard">
@@ -38,11 +150,96 @@
       </ul>
     </div>
   </div>
-
   <audio id="blastSound" preload="auto">
     <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-1612.mp3" type="audio/mpeg">
   </audio>
+  <script>
+    let balance = 1000;
+    let multiplier = 1.00;
+    let interval;
+    let planeInterval;
+    let inFlight = false;
+    let betPlaced = false;
+    let betAmount = 0;
+    let planePosition = 0;
 
-  <script src="script.js"></script>
+    const plane = document.getElementById('plane');
+
+    function updateUI() {
+      document.getElementById('balance').innerText = `Wallet: ₹${balance.toFixed(2)}`;
+      document.getElementById('multiplier').innerText = `x${multiplier.toFixed(2)}`;
+    }
+
+    function animatePlane() {
+      planePosition = 0;
+      plane.style.left = '0px';
+      planeInterval = setInterval(() => {
+        planePosition += 5;
+        plane.style.left = planePosition + 'px';
+      }, 100);
+    }
+
+    function startFlight() {
+      multiplier = 1.00;
+      inFlight = true;
+      updateUI();
+      animatePlane();
+      interval = setInterval(() => {
+        multiplier += 0.05;
+        updateUI();
+        if (multiplier >= Math.random() * 10 + 1.5) {
+          crash();
+        }
+      }, 100);
+    }
+
+    function crash() {
+      clearInterval(interval);
+      clearInterval(planeInterval);
+      inFlight = false;
+      document.getElementById('blastSound').play();
+      if (betPlaced) {
+        document.getElementById('log').innerText = `💥 Plane crashed at x${multiplier.toFixed(2)}. You lost ₹${betAmount}`;
+        betPlaced = false;
+        betAmount = 0;
+        updateUI();
+      } else {
+        document.getElementById('log').innerText = `💥 Plane crashed at x${multiplier.toFixed(2)}`;
+      }
+      plane.style.left = '0px';
+      setTimeout(startFlight, 3000);
+    }
+
+    function placeBet() {
+      if (!inFlight && !betPlaced) {
+        betAmount = parseFloat(document.getElementById('betAmount').value);
+        if (isNaN(betAmount) || betAmount < 1 || betAmount > balance) {
+          alert("Invalid bet amount");
+          return;
+        }
+        balance -= betAmount;
+        betPlaced = true;
+        document.getElementById('log').innerText = `✅ Bet placed: ₹${betAmount}`;
+        updateUI();
+      } else {
+        alert("Can't bet during flight or duplicate bet");
+      }
+    }
+
+    function cashOut() {
+      if (inFlight && betPlaced) {
+        const winAmount = betAmount * multiplier;
+        balance += winAmount;
+        document.getElementById('log').innerText = `🏆 Cashed out at x${multiplier.toFixed(2)}. You won ₹${winAmount.toFixed(2)}`;
+        betPlaced = false;
+        betAmount = 0;
+        updateUI();
+      } else {
+        alert("No active bet to cash out");
+      }
+    }
+
+    window.onload = startFlight;
+  </script>
 </body>
 </html>
