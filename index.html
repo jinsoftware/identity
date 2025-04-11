@@ -5,11 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACS Aviator Bet</title>
 
-  <!-- Firebase via CDN (compatible with GitHub Pages) -->
+  <!-- Firebase CDN version (compat) for GitHub Pages compatibility -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .plane-container img {
+      object-fit: contain;
+      max-height: 100%;
+    }
+    .graph-bg {
+      background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png') repeat-x bottom;
+      background-size: cover;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      opacity: 0.2;
+    }
+  </style>
 </head>
 <body>
   <div class="header">
@@ -28,7 +44,7 @@
     <div class="game-container">
       <div class="plane-container">
         <div class="graph-bg"></div>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Airplane_silhouette.svg" class="plane" id="plane" />
+        <img src="https://cdn-icons-png.flaticon.com/512/833/833314.png" class="plane" id="plane" />
       </div>
       <div class="multiplier-box" id="multiplier">x1.00</div>
       <div class="history-bar" id="history"></div>
@@ -95,7 +111,7 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       auth.createUserWithEmailAndPassword(email, password)
-        .then(() => alert("Signup successful, now login"))
+        .then(() => alert("Signup successful, please login"))
         .catch(e => alert("Signup Error: " + e.message));
     }
   </script>
