@@ -5,49 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACS Aviator Bet</title>
 
-  <!-- Firebase SDKs (Classic Compat Version) -->
+  <!-- Firebase via CDN (compatible with GitHub Pages) -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
   <link rel="stylesheet" href="style.css" />
-
-  <script>
-    // ✅ Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAsLWm1QNo6FLDXaHaFEjsJ108kvTS2uqo",
-      authDomain: "macs-aviater.firebaseapp.com",
-      projectId: "macs-aviater",
-      storageBucket: "macs-aviater.firebasestorage.app",
-      messagingSenderId: "860336088377",
-      appId: "1:860336088377:web:41d03b234bb7959f61b4e8"
-    };
-
-    // ✅ Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          document.getElementById("login-section").style.display = "none";
-          document.getElementById("game-section").style.display = "flex";
-          countdownStart();
-        })
-        .catch(e => alert("Login Error: " + e.message));
-    }
-
-    function signup() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => alert("Signup successful, please login"))
-        .catch(e => alert("Signup Error: " + e.message));
-    }
-  </script>
 </head>
-
 <body>
   <div class="header">
     <div>MACS Aviator Bet</div>
@@ -70,7 +33,6 @@
       <div class="multiplier-box" id="multiplier">x1.00</div>
       <div class="history-bar" id="history"></div>
       <div id="countdown"></div>
-
       <div class="bet-controls">
         <div class="bet-box">
           <strong>Bet A:</strong><br />
@@ -85,7 +47,6 @@
           <button onclick="cashOut('B')">Cash Out B</button>
         </div>
       </div>
-
       <div class="log" id="log"></div>
     </div>
 
@@ -104,6 +65,40 @@
   <audio id="blastSound" preload="auto">
     <source src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-1612.mp3" type="audio/mpeg" />
   </audio>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAsLWm1QNo6FLDXaHaFEjsJ108kvTS2uqo",
+      authDomain: "macs-aviater.firebaseapp.com",
+      projectId: "macs-aviater",
+      storageBucket: "macs-aviater.firebasestorage.app",
+      messagingSenderId: "860336088377",
+      appId: "1:860336088377:web:41d03b234bb7959f61b4e8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("game-section").style.display = "flex";
+          countdownStart();
+        })
+        .catch(e => alert("Login Error: " + e.message));
+    }
+
+    function signup() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => alert("Signup successful, now login"))
+        .catch(e => alert("Signup Error: " + e.message));
+    }
+  </script>
 
   <script src="script.js"></script>
 </body>
