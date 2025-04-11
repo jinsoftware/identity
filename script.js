@@ -94,4 +94,6 @@ function countdownStart() {
   }, 1000);
 }
 
-window.onload = countdownStart;
+window.countdownStart = countdownStart; // allow call from index.html
+window.placeBet = placeBet;
+window.cashOut = cashOut;
