@@ -4,6 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACS Aviator Bet</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAsLWm1QNo6FLDXaHaFEjsJ108kvTS2uqo",
+      authDomain: "macs-aviater.firebaseapp.com",
+      projectId: "macs-aviater",
+      storageBucket: "macs-aviater.firebasestorage.app",
+      messagingSenderId: "860336088377",
+      appId: "1:860336088377:web:41d03b234bb7959f61b4e8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.login = function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("game-section").style.display = "flex";
+          countdownStart();
+        })
+        .catch(e => alert(e.message));
+    }
+
+    window.signup = function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => alert("Signup successful, please login"))
+        .catch(e => alert(e.message));
+    }
+  </script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,7 +47,13 @@
     <div>MACS Aviator Bet</div>
     <div class="balance" id="balance">Wallet: ₹1000</div>
   </div>
-  <div class="main">
+  <div id="login-section">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
+  <div class="main" style="display:none" id="game-section">
     <div class="game-container">
       <div class="plane-container">
         <div class="graph-bg"></div>
